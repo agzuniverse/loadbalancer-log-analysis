@@ -17,6 +17,14 @@ type data struct {
 	statusCode         int
 }
 
+type plotValues struct {
+	avg   float64
+	p90   float64
+	p99   float64
+	p999  float64
+	p9999 float64
+}
+
 func main() {
 	fmt.Println("Loading file...")
 	f, err := os.Open("log.log")
@@ -45,6 +53,13 @@ func main() {
 
 	p90, p99, p999, p9999 := findPercentiles(datapoints)
 	avg := findAvg(datapoints)
+	points := plotValues{
+		avg,
+		p90,
+		p99,
+		p999,
+		p9999,
+	}
 }
 
 func findPercentiles(datapoints []data) (p90, p99, p999, p9999 float64) {
