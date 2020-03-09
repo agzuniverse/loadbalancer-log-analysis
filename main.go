@@ -66,6 +66,9 @@ func main() {
 		p9999,
 	}
 	createLatencyPlot(points)
+
+	count2xx, count3xx, count4xx, count5xx := getRequestCountPerCode(datapoints)
+
 }
 
 func createLatencyPlot(points plotValues) {
@@ -118,6 +121,21 @@ func createLatencyPlot(points plotValues) {
 	if err := p.Save(5*vg.Inch, 5*vg.Inch, "plot.png"); err != nil {
 		panic(err)
 	}
+}
+
+func getRequestCountPerCode(datapoints []data) (count2xx, count3xx, count4xx, count5xx int) {
+	for _, v := range datapoints {
+		if v.statusCode >= 200 && v.statusCode < 300 {
+			count2xx++
+		} else if v.statusCode >= 300 && v.statusCode < 400 {
+			count3xx++
+		} else if v.statusCode >= 400 && v.statusCode < 500 {
+			count4xx++
+		} else if v.statusCode >= 500 && v.statusCode < 600 {
+			count5xx++
+		}
+	}
+	return
 }
 
 func findPercentiles(datapoints []data) (p90, p99, p999, p9999 float64) {
