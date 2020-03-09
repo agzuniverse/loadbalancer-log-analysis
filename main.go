@@ -5,8 +5,15 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 	"strings"
 )
+
+type data struct {
+	targetResponseTime float64
+	target             string
+	statusCode         int
+}
 
 func main() {
 	fmt.Println("Loading file...")
@@ -14,17 +21,32 @@ func main() {
 	handleErr(err)
 	defer f.Close()
 
+	datapoints := make([]data, 0)
+
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
 		line := scanner.Text()
 		params := strings.Split(line, " ")
 		if len(params) > 1 {
-			fmt.Println(params)
+			datapoint := createDataPoint(params)
+			datapoints = append(datapoints, datapoint)
 		}
 	}
 
 	err = scanner.Err()
 	handleErr(err)
+}
+
+func createDataPoint(params []string) data {
+	statusCodeAsInt, err := strconv.Atoi(params[8])
+	handleErr(err)
+	responseTimeAsFloat, err := strconv.ParseFloat(params[6], 32)
+	handleErr(err)
+	return data{
+		targetResponseTime: responseTimeAsFloat,
+		target:             params[4],
+		statusCode:         statusCodeAsInt,
+	}
 }
 
 func handleErr(err error) {
