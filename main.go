@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -35,6 +36,11 @@ func main() {
 
 	err = scanner.Err()
 	handleErr(err)
+
+	// Sort the data points on targetResponseTime for ease of finding percentiles
+	sort.Slice(datapoints, func(i, j int) bool {
+		return datapoints[i].targetResponseTime < datapoints[j].targetResponseTime
+	})
 }
 
 func createDataPoint(params []string) data {
