@@ -65,10 +65,10 @@ func main() {
 		p999,
 		p9999,
 	}
-	createPlot(points)
+	createLatencyPlot(points)
 }
 
-func createPlot(points plotValues) {
+func createLatencyPlot(points plotValues) {
 	p, err := plot.New()
 	handleErr(err)
 	p.Title.Text = "Latencies"
