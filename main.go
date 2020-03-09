@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"log"
+	"math"
 	"os"
 	"sort"
 	"strconv"
@@ -42,7 +43,17 @@ func main() {
 		return datapoints[i].targetResponseTime < datapoints[j].targetResponseTime
 	})
 
+	p90, p99, p999, p9999 := findPercentiles(datapoints)
 	avg := findAvg(datapoints)
+}
+
+func findPercentiles(datapoints []data) (p90, p99, p999, p9999 float64) {
+	n := len(datapoints)
+	p90 = datapoints[int(math.Ceil(float64(n)*0.90))].targetResponseTime
+	p99 = datapoints[int(math.Ceil(float64(n)*0.99))].targetResponseTime
+	p999 = datapoints[int(math.Ceil(float64(n)*0.999))].targetResponseTime
+	p9999 = datapoints[int(math.Ceil(float64(n)*0.9999))].targetResponseTime
+	return
 }
 
 func findAvg(datapoints []data) float64 {
