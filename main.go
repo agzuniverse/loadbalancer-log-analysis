@@ -9,6 +9,11 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+
+	"gonum.org/v1/plot"
+	"gonum.org/v1/plot/plotter"
+	"gonum.org/v1/plot/plotutil"
+	"gonum.org/v1/plot/vg"
 )
 
 type data struct {
@@ -59,6 +64,59 @@ func main() {
 		p99,
 		p999,
 		p9999,
+	}
+	createPlot(points)
+}
+
+func createPlot(points plotValues) {
+	p, err := plot.New()
+	handleErr(err)
+	p.Title.Text = "Latencies"
+	p.Y.Label.Text = "Latency"
+
+	pointsForAvg := plotter.Values{points.avg}
+	pointsForp90 := plotter.Values{points.p90}
+	pointsForp99 := plotter.Values{points.p99}
+	pointsForp999 := plotter.Values{points.p999}
+	pointsForp9999 := plotter.Values{points.p9999}
+
+	w := vg.Points(20)
+
+	barsForAvg, err := plotter.NewBarChart(pointsForAvg, w)
+	handleErr(err)
+	barsForAvg.Color = plotutil.Color(0)
+	barsForAvg.Offset = -2 * w
+
+	barsForp90, err := plotter.NewBarChart(pointsForp90, w)
+	handleErr(err)
+	barsForp90.Color = plotutil.Color(1)
+	barsForp90.Offset = -w
+
+	barsForp99, err := plotter.NewBarChart(pointsForp99, w)
+	handleErr(err)
+	barsForp99.Color = plotutil.Color(2)
+
+	barsForp999, err := plotter.NewBarChart(pointsForp999, w)
+	handleErr(err)
+	barsForp999.Color = plotutil.Color(3)
+	barsForp999.Offset = w
+
+	barsForp9999, err := plotter.NewBarChart(pointsForp9999, w)
+	handleErr(err)
+	barsForp9999.Color = plotutil.Color(4)
+	barsForp9999.Offset = 2 * w
+
+	p.Add(barsForAvg, barsForp90, barsForp99, barsForp999, barsForp9999)
+	p.Legend.Add("Average", barsForAvg)
+	p.Legend.Add("p90", barsForp90)
+	p.Legend.Add("p99", barsForp99)
+	p.Legend.Add("p99.9", barsForp999)
+	p.Legend.Add("p99.99", barsForp9999)
+	p.Legend.Top = true
+	p.NominalX("")
+
+	if err := p.Save(5*vg.Inch, 5*vg.Inch, "plot.png"); err != nil {
+		panic(err)
 	}
 }
 
