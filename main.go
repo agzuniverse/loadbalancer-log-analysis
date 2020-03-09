@@ -41,6 +41,17 @@ func main() {
 	sort.Slice(datapoints, func(i, j int) bool {
 		return datapoints[i].targetResponseTime < datapoints[j].targetResponseTime
 	})
+
+	avg := findAvg(datapoints)
+}
+
+func findAvg(datapoints []data) float64 {
+	avg := 0.0
+	for _, v := range datapoints {
+		avg += v.targetResponseTime
+	}
+	avg /= float64(len(datapoints))
+	return avg
 }
 
 func createDataPoint(params []string) data {
