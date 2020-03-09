@@ -68,6 +68,54 @@ func main() {
 	createLatencyPlot(points)
 
 	count2xx, count3xx, count4xx, count5xx := getRequestCountPerCode(datapoints)
+	fmt.Println(count2xx, count3xx, count4xx, count5xx)
+	createRequestCountPlot(count2xx, count3xx, count4xx, count5xx)
+}
+
+func createRequestCountPlot(count2xx, count3xx, count4xx, count5xx int) {
+	p, err := plot.New()
+	handleErr(err)
+	p.Title.Text = "Request Counts per code"
+	p.Title.Padding = vg.Length(10)
+	p.Y.Label.Text = "Request Count"
+
+	pointsFor2xx := plotter.Values{float64(count2xx)}
+	pointsFor3xx := plotter.Values{float64(count3xx)}
+	pointsFor4xx := plotter.Values{float64(count4xx)}
+	pointsFor5xx := plotter.Values{float64(count5xx)}
+
+	w := vg.Points(30)
+
+	barsFor2xx, err := plotter.NewBarChart(pointsFor2xx, w)
+	handleErr(err)
+	barsFor2xx.Color = plotutil.Color(0)
+	barsFor2xx.Offset = -2 * w
+
+	barsFor3xx, err := plotter.NewBarChart(pointsFor3xx, w)
+	handleErr(err)
+	barsFor3xx.Color = plotutil.Color(1)
+	barsFor3xx.Offset = -w
+
+	barsFor4xx, err := plotter.NewBarChart(pointsFor4xx, w)
+	handleErr(err)
+	barsFor4xx.Color = plotutil.Color(2)
+
+	barsFor5xx, err := plotter.NewBarChart(pointsFor5xx, w)
+	handleErr(err)
+	barsFor5xx.Color = plotutil.Color(3)
+	barsFor5xx.Offset = w
+
+	p.Add(barsFor2xx, barsFor3xx, barsFor4xx, barsFor5xx)
+	p.Legend.Add("2xx", barsFor2xx)
+	p.Legend.Add("3xx", barsFor3xx)
+	p.Legend.Add("4xx", barsFor4xx)
+	p.Legend.Add("5xx", barsFor5xx)
+	p.Legend.Top = true
+	p.NominalX("")
+
+	if err := p.Save(5*vg.Inch, 5*vg.Inch, "requestCountsPerCode.png"); err != nil {
+		panic(err)
+	}
 
 }
 
