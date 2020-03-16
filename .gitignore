@@ -3,3 +3,6 @@ temp.*
 logs_analysis
 *.png
 logs/
+__pycache__
+.vscode
+env/

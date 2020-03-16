@@ -70,6 +70,10 @@ func main() {
 	count2xx, count3xx, count4xx, count5xx := getRequestCountPerCode(datapoints)
 	fmt.Println(count2xx, count3xx, count4xx, count5xx)
 	createRequestCountPlot(count2xx, count3xx, count4xx, count5xx)
+
+	targetCounts := make(map[string]int)
+	getRequestCountPerTarget(targetCounts, datapoints)
+	fmt.Println(len(targetCounts))
 }
 
 func createRequestCountPlot(count2xx, count3xx, count4xx, count5xx int) {
@@ -168,6 +172,12 @@ func createLatencyPlot(points plotValues) {
 
 	if err := p.Save(5*vg.Inch, 5*vg.Inch, "plot.png"); err != nil {
 		panic(err)
+	}
+}
+
+func getRequestCountPerTarget(targetCounts map[string]int, datapoints []data) {
+	for _, v := range datapoints {
+		targetCounts[v.target]++
 	}
 }
 
